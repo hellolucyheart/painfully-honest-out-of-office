@@ -23,7 +23,10 @@ The reply (191 characters):
     will be just as full when I'm back, and no more urgent than it
     is now. I'll reply as soon as I can. Thank you for your patience.
 
-Nothing else is written; there is no second draft.
+Nothing else is written; there is no second draft. Running with
+``--dry-run`` only validates the reply (1-200 characters, one line, no
+leading or trailing whitespace) and writes nothing, so the entry can be
+checked without side effects.
 """
 
 import os
@@ -48,8 +51,12 @@ def validate(reply: str) -> None:
         raise ValueError("entry must be a single line")
 
 
-def main() -> int:
+def main(argv=None) -> int:
+    """Validate the reply and write it, unless --dry-run only validates."""
+    args = list(sys.argv[1:] if argv is None else argv)
     validate(REPLY)
+    if "--dry-run" in args:
+        return 0
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, "entry.txt")
